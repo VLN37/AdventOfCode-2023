@@ -16,6 +16,9 @@ impl Bag {
 }
 
 impl From<&str> for Bag {
+    /// ## Example format
+    /// 4 blue, 17 green
+    /// 12 red, 17 blue, 3 green
     fn from(raw: &str) -> Self {
         let mut bag = Bag::new();
         for balls in raw.split(',') {
@@ -36,6 +39,7 @@ impl From<&str> for Bag {
 #[derive(Debug, Default)]
 pub struct Game {
     pub bags: Vec<Bag>,
+    pub id:   u32,
 }
 
 impl Game {
@@ -43,13 +47,18 @@ impl Game {
 }
 
 impl From<&str> for Game {
+    /// ## Example format
+    /// Game 51: 4 blue, 17 green; 3 blue, 17 green, 1 red; 6 green, 8 blue
     fn from(raw: &str) -> Self {
         let mut result = Game::new();
-        let game = raw.split(':').last().unwrap().trim().to_string();
-        for raw_bag in game.split(';') {
+        let iter = raw.split(':');
+        let raw_game = iter.last().unwrap().trim().to_string();
+
+        let iter = raw.split(':').nth(0).unwrap().split(' ');
+        result.id = iter.last().unwrap().parse().unwrap();
+        for raw_bag in raw_game.split(';') {
             result.bags.push(Bag::from(raw_bag));
         }
-        // dbg!(&result.bags);
         result
     }
 }

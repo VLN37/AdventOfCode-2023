@@ -2,22 +2,18 @@ use day_02::{Bag, Game};
 
 fn main() {
     let magical_bag = Bag::factory(12, 13, 14);
-    let mut valid_games: Vec<usize> = Vec::new();
+    let mut valid_games: Vec<u32> = Vec::new();
 
     let input = include_str!("../../resources/input.txt");
-    for (id, raw_game) in input.lines().enumerate() {
+    '_main: for raw_game in input.lines() {
         let game = Game::from(raw_game);
-        let mut valid = true;
-        for bag in game.bags {
-            if !magical_bag.holds(&bag) {
-                valid = false;
-                break;
+        for bag in &game.bags {
+            if !magical_bag.holds(bag) {
+                continue '_main;
             }
         }
-        if valid {
-            valid_games.push(id + 1);
-        }
+        valid_games.push(game.id);
     }
-    let result: usize = valid_games.iter().sum();
+    let result: u32 = valid_games.iter().sum();
     println!("Result: {result}");
 }
