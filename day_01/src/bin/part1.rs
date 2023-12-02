@@ -4,8 +4,8 @@ fn first_and_last(str: &str) -> u32 {
     let idx2 = str.rfind(|c: char| c.is_ascii_digit()).unwrap();
     let bytes = str.as_bytes();
 
-    string.push(bytes[idx1] as char);
-    string.push(bytes[idx2] as char);
+    string.push(bytes[idx1].into());
+    string.push(bytes[idx2].into());
     string.parse().unwrap()
 }
 
