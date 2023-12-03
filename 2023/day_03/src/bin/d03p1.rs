@@ -5,43 +5,25 @@ fn main() {
     let mut matrix: Vec<Vec<char>> = Vec::new();
     let mut results: Vec<usize> = Vec::new();
 
-    for line in input.lines() {
-        matrix.push(line.chars().collect())
-    }
-    let width = matrix[0].len() + 2;
-    let height = matrix.len() + 2;
-
-    for line in &mut matrix {
-        line.insert(0, '?');
-        line.push('?');
-    }
-
-    matrix.insert(0, vec!['?'; width]);
+    let width = input.find('\n').unwrap() + 2;
     matrix.push(vec!['?'; width]);
-
-    for line in &matrix {
-        println!("{:?}", line);
+    for line in &mut input.lines() {
+        matrix.push(format!("?{line}?").chars().collect());
     }
-    println!("-------------");
+    matrix.push(vec!['?'; width]);
+    let height = matrix.len();
 
     let mut i = 1;
     let mut j = 1;
-    while i < height - 1 {
-        // dbg!(i);
-        while j < width - 1 {
+    while i < height {
+        while j < width {
             if matrix[i][j].is_ascii_digit() {
                 let slice = &matrix[i][j..];
                 let distance = distance(slice);
-                println!("distance {distance}");
-                println!("slice {:?}", slice);
                 if surroundings(&matrix, i, j, distance) {
-                    println!("FOUND");
                     let str: String = matrix[i][j..j + distance].iter().collect();
                     results.push(str.parse().unwrap());
-                } else {
-                    println!("NOT FOUND");
                 }
-                println!("-------------");
                 j += distance;
                 continue;
             }
@@ -50,6 +32,5 @@ fn main() {
         j = 1;
         i += 1;
     }
-    dbg!(&results);
     println!("Result: {}", results.iter().sum::<usize>());
 }

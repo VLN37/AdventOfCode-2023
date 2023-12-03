@@ -1,30 +1,19 @@
 use std::collections::HashMap;
 
-use day_03::{distance, star_coordinates, surroundings, GearCoordinates};
+use day_03::{distance, star_coordinate, surroundings, GearCoordinate};
 
 fn main() {
-    let input = include_str!("../../resources/small_input.txt");
+    let input = include_str!("../../resources/input.txt");
     let mut matrix: Vec<Vec<char>> = Vec::new();
     let mut results: HashMap<_, Vec<i32>> = HashMap::new();
 
-    for line in input.lines() {
-        matrix.push(line.chars().collect())
-    }
-    let width = matrix[0].len() + 2;
-    let height = matrix.len() + 2;
-
-    for line in &mut matrix {
-        line.insert(0, '?');
-        line.push('?');
-    }
-
-    matrix.insert(0, vec!['?'; width]);
+    let width = input.find('\n').unwrap() + 2;
     matrix.push(vec!['?'; width]);
-
-    for line in &matrix {
-        println!("{:?}", line);
+    for line in &mut input.lines() {
+        matrix.push(format!("?{line}?").chars().collect());
     }
-    println!("-------------");
+    matrix.push(vec!['?'; width]);
+    let height = matrix.len();
 
     let mut i = 1;
     let mut j = 1;
@@ -34,26 +23,18 @@ fn main() {
             if matrix[i][j].is_ascii_digit() {
                 let slice = &matrix[i][j..];
                 let distance = distance(slice);
-                // println!("distance {distance}");
-                // println!("slice {:?}", slice);
                 if surroundings(&matrix, i, j, distance) {
-                    if let Some((x, y)) = star_coordinates(&matrix, i, j, distance) {
-                        println!("FOUND");
+                    if let Some((x, y)) = star_coordinate(&matrix, i, j, distance) {
                         let str: String = matrix[i][j..j + distance].iter().collect();
                         let nbr = str.parse::<i32>().unwrap();
-                        let coord = GearCoordinates::new(x, y);
-                        let opt = results.get_mut(&coord);
-                        match opt {
-                            Some(vec) => vec.push(nbr),
-                            None => {
-                                results.insert(coord, vec![nbr]);
-                            }
+                        let coord = GearCoordinate::new(x, y);
+                        if let Some(vec) = results.get_mut(&coord) {
+                            vec.push(nbr)
+                        } else {
+                            results.insert(coord, vec![nbr]);
                         }
                     }
-                } else {
-                    println!("NOT FOUND");
                 }
-                println!("-------------");
                 j += distance;
                 continue;
             }
@@ -62,7 +43,6 @@ fn main() {
         j = 1;
         i += 1;
     }
-    dbg!(&results);
     let result: i32 = results
         .values()
         .filter(|x| x.len() == 2)
