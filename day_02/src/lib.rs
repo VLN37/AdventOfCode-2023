@@ -22,13 +22,11 @@ impl From<&str> for Bag {
     fn from(raw: &str) -> Self {
         let mut bag = Bag::new();
         for balls in raw.split(',') {
-            let mut pair = balls.trim().split(' ');
-            let qty: u32 = pair.next().unwrap().parse().unwrap();
-            let color: &str = pair.next().unwrap().trim();
-            match color {
-                "red" => bag.r += qty,
-                "green" => bag.g += qty,
-                "blue" => bag.b += qty,
+            let (qty, color) = balls.trim().split_once(' ').unwrap();
+            match color.trim() {
+                "red" => bag.r = qty.parse().unwrap(),
+                "green" => bag.g = qty.parse().unwrap(),
+                "blue" => bag.b = qty.parse().unwrap(),
                 _ => panic!("invalid ball color"),
             }
         }
@@ -50,16 +48,11 @@ impl From<&str> for Game {
     /// ## Example format
     /// Game 51: 4 blue, 17 green; 3 blue, 17 green, 1 red; 6 green, 8 blue
     fn from(raw: &str) -> Self {
-        let mut result = Game::new();
-        let iter = raw.split(':');
-        let raw_game = iter.last().unwrap().trim().to_string();
-
-        let iter = raw.split(':').nth(0).unwrap().split(' ');
-        result.id = iter.last().unwrap().parse().unwrap();
-        for raw_bag in raw_game.split(';') {
-            result.bags.push(Bag::from(raw_bag));
-        }
-        result
+        let mut game = Game::new();
+        let (id, raw_game) = raw.split_once(':').unwrap();
+        game.id = id.split(' ').last().unwrap().parse().unwrap();
+        game.bags.extend(raw_game.trim().split(';').map(Bag::from));
+        game
     }
 }
 
