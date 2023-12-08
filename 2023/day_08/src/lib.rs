@@ -1,15 +1,18 @@
-#[derive(Debug, Clone, Copy)]
-pub enum Direction {
-    LEFT,
-    RIGHT,
+#[derive(Debug)]
+pub struct Place {
+    pub place: String,
+    pub left:  String,
+    pub right: String,
 }
 
-impl From<char> for Direction {
-    fn from(c: char) -> Self {
-        match c {
-            'L' => Self::LEFT,
-            'R' => Self::RIGHT,
-            _ => panic!("Invalid direction"),
+impl From<&str> for Place {
+    fn from(value: &str) -> Self {
+        let v: String = value.chars().filter(|c| !"(),=".contains(*c)).collect();
+        let mut iter = v.split_whitespace();
+        Place {
+            place: iter.next().unwrap().into(),
+            left:  iter.next().unwrap().into(),
+            right: iter.next().unwrap().into(),
         }
     }
 }
