@@ -1,6 +1,7 @@
 [workspace]
 resolver = "2"
-members = [ "_repr","day_*"]
+members = ["_repr", "day_*"]
 
 [workspace.dependencies]
 itertools = "*"
+num-integer = "*"

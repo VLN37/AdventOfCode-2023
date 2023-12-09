@@ -1,40 +1,42 @@
 use day_08::Place;
+use num_integer::lcm;
 
 fn main() {
     let input = include_str!("../../resources/input.txt");
     let (d, p) = input.split_once("\n\n").unwrap();
 
     let places: Vec<Place> = p.lines().map(Place::from).collect();
-
-    let mut i = 0;
-    let mut currs: Vec<Place> = places
+    let starting_places: Vec<Place> = places
         .iter()
         .filter(|x| x.place.ends_with('A'))
         .cloned()
         .collect();
-    dbg!(currs.len());
-    'outer: loop {
-        for c in d.chars() {
-            let mut next: Vec<Place> = Vec::with_capacity(currs.len());
-            for curr in &currs {
+    dbg!(&starting_places);
+    let mut results: Vec<usize> = Vec::new();
+    'outer: for p in &starting_places {
+        let mut curr = p;
+        let mut i = 0;
+        dbg!(&p);
+        loop {
+            for c in d.chars() {
                 if c == 'L' {
-                    let place = places.iter().find(|x| curr.left == x.place).unwrap();
-                    next.push(place.clone());
+                    curr = places.iter().find(|x| curr.left == x.place).unwrap();
                 } else if c == 'R' {
-                    let place = places.iter().find(|x| curr.right == x.place).unwrap();
-                    next.push(place.clone());
+                    curr = places.iter().find(|x| curr.right == x.place).unwrap();
                 }
-            }
-            currs = next;
-            // dbg!(&currs);
-            i += 1;
-            if currs.iter().all(|x| x.place.ends_with('Z')) {
-                break 'outer;
-            }
-            if i % 1000000 == 0 {
-                dbg!(i / 1000000);
+                i += 1;
+                if curr.place.ends_with('Z') {
+                    results.push(i);
+                    continue 'outer;
+                }
             }
         }
     }
-    println!("Result: {i}");
+
+    let mut x = lcm(results[0], results[1]);
+    dbg!(&results);
+    for y in results.into_iter().skip(2) {
+        x = lcm(x, y);
+    }
+    println!("x: {x}");
 }
