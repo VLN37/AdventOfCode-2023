@@ -12,7 +12,8 @@ fn main() {
         sequences.push(v);
     }
 
-    let mut extrapolations: Vec<i32> = Vec::new();
+    let mut next_values: Vec<i32> = Vec::new();
+    let mut previous_values: Vec<i32> = Vec::new();
 
     for sequence in sequences {
         let mut reductions: Vec<Vec<i32>> = Vec::new();
@@ -24,14 +25,28 @@ fn main() {
             for i in 0..s.len() - 1 {
                 next_step.push(s[i + 1] - s[i]);
             }
-            if s.iter().all(|x| *x == 0) {
-                let sum = reductions.into_iter().map(|x| *x.last().unwrap()).sum();
-                extrapolations.push(sum);
+            if next_step.iter().all(|x| *x == 0) {
+                reductions.push(next_step);
+                reductions.last_mut().unwrap().insert(0, 0);
+                for i in (1..reductions.len()).rev() {
+                    let curr = reductions[i].first().unwrap().to_owned();
+                    let next = reductions[i - 1].first().unwrap().to_owned();
+                    reductions[i - 1].insert(0, next - curr);
+                }
+                let sum = reductions.iter().map(|x| *x.last().unwrap()).sum();
+                next_values.push(sum);
+                let prev = reductions.first().unwrap().first().unwrap().to_owned();
+                previous_values.push(prev);
                 break;
             }
             reductions.push(next_step);
         }
+        dbg!(&reductions);
     }
-    let result: i32 = extrapolations.iter().sum();
-    dbg!(result);
+    dbg!(&next_values);
+    dbg!(&previous_values);
+    let next: i32 = next_values.iter().sum();
+    dbg!(next);
+    let prev: i32 = previous_values.iter().sum();
+    dbg!(prev);
 }
