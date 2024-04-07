@@ -12,7 +12,7 @@ pub fn find_player(vec: &[Vec<char>]) -> (usize, usize) {
         }
     }
     if !found {
-        panic!("char not found");
+        panic!("Player not found");
     }
     (x, y)
 }
