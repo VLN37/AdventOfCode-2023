@@ -1,50 +1,93 @@
 use day_10::*;
 
+fn recurse(
+    maze: &mut [Vec<char>],
+    steps: &mut Vec<(usize, usize)>,
+    mut x: usize,
+    mut y: usize,
+) -> bool {
+    let mut viable = false;
+    dbg!(maze[x][y]);
+    // dbg!(maze
+    //     .to_owned()
+    //     .iter()
+    //     .map(|x| x.to_owned().iter().collect::<String>())
+    //     .collect::<Vec<String>>());
+
+    if valid_move(Cardinal::South, maze[x][y], maze[x + 1][y]) {
+        if maze[x][y] != 'S' {
+            maze[x][y] = 'x';
+        }
+        dbg!("recurse", maze[x][y]);
+        dbg!('&');
+        x += 1;
+        viable = recurse(maze, steps, x, y);
+        if !viable {
+            maze[x][y] = 'n';
+        }
+    } else if valid_move(Cardinal::North, maze[x][y], maze[x - 1][y]) {
+        if maze[x][y] != 'S' {
+            maze[x][y] = 'x';
+        }
+        dbg!("recurse", maze[x][y]);
+        dbg!('&');
+        x -= 1;
+        viable = recurse(maze, steps, x, y);
+        if !viable {
+            maze[x][y] = 'n';
+        }
+    } else if valid_move(Cardinal::East, maze[x][y], maze[x][y + 1]) {
+        if maze[x][y] != 'S' {
+            maze[x][y] = 'x';
+        }
+        dbg!("recurse", maze[x][y]);
+        dbg!('&');
+        y += 1;
+        viable = recurse(maze, steps, x, y);
+        if !viable {
+            maze[x][y] = 'n';
+        }
+    } else if valid_move(Cardinal::West, maze[x][y], maze[x][y - 1]) {
+        if maze[x][y] != 'S' {
+            maze[x][y] = 'x';
+        }
+        dbg!("recurse", maze[x][y]);
+        dbg!('&');
+        y -= 1;
+        viable = recurse(maze, steps, x, y);
+        if !viable {
+            maze[x][y] = 'n';
+        }
+    }
+    if viable {
+        dbg!("push", (x, y), maze[x][y]);
+        steps.push((x, y));
+        return true;
+    }
+    if !viable && back_to_where_i_started(maze, x, y) {
+        dbg!("push end", (x, y), maze[x][y]);
+        maze[x][y] = 'x';
+        return true;
+    }
+    maze[x][y] = 'n';
+    false
+}
+
 fn main() {
-    let input = include_str!("../../resources/input.txt");
+    let input = include_str!("../../resources/small_input.txt");
     let mut maze: Vec<Vec<char>> =
         input.lines().map(|x| Vec::from_iter(x.chars())).collect();
 
-    let (mut x, mut y) = find_player(&maze);
+    // dbg!(&maze);
+    let (x, y) = find_player(&maze);
     let init_pos = (x, y);
 
-    let mut distance: usize = 0;
     let mut steps: Vec<(usize, usize)> = Vec::new();
 
     dbg!(init_pos, x, y);
-    loop {
-        if valid_move(Cardinal::North, maze[x + 1][y]) {
-            if (x, y) != init_pos {
-                maze[x][y] = 'x';
-            }
-            x += 1;
-        } else if valid_move(Cardinal::South, maze[x - 1][y]) {
-            if (x, y) != init_pos {
-                maze[x][y] = 'x';
-            }
-            x -= 1;
-        } else if valid_move(Cardinal::East, maze[x][y + 1]) {
-            if (x, y) != init_pos {
-                maze[x][y] = 'x';
-            }
-            y += 1;
-        } else if valid_move(Cardinal::West, maze[x][y - 1]) {
-            if (x, y) != init_pos {
-                maze[x][y] = 'x';
-            }
-            y -= 1;
-        } else {
-            panic!("invalid move");
-        }
-        distance += 1;
-        steps.push((x, y));
-        dbg!(maze[x][y]);
-        dbg!(x, y);
-        if (x, y) == init_pos {
-            println!("exit found");
-            break;
-        }
-    }
-    dbg!(distance);
-    dbg!(steps);
+    recurse(&mut maze, &mut steps, x, y);
+    dbg!(steps.len());
+    dbg!(steps.len() / 2);
+    // dbg!(steps);
+    // dbg!(maze);
 }
