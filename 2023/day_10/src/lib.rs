@@ -26,7 +26,7 @@ pub enum Cardinal {
 }
 
 pub fn valid_move(direction: Cardinal, src: char, dst: char) -> bool {
-    println!("src {src} dst {dst} {:?}", direction);
+    // println!("src {src} dst {dst} {:?}", direction);
     match direction {
         Cardinal::North => "|LJS".contains(src) && "|7F".contains(dst),
         Cardinal::West => "-J7S".contains(src) && "L-F".contains(dst),

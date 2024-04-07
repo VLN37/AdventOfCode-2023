@@ -5,15 +5,16 @@ fn recurse(
     steps: &mut Vec<(usize, usize)>,
     mut x: usize,
     mut y: usize,
+    distance: usize,
 ) -> bool {
     let mut viable = false;
     dbg!(maze[x][y]);
-    // dbg!(maze
-    //     .to_owned()
-    //     .iter()
-    //     .map(|x| x.to_owned().iter().collect::<String>())
-    //     .collect::<Vec<String>>());
-
+    dbg!(maze
+        .to_owned()
+        .iter()
+        .map(|x| x.to_owned().iter().collect::<String>())
+        .collect::<Vec<String>>());
+    dbg!(&distance);
     if valid_move(Cardinal::South, maze[x][y], maze[x + 1][y]) {
         if maze[x][y] != 'S' {
             maze[x][y] = 'x';
@@ -21,7 +22,7 @@ fn recurse(
         dbg!("recurse", maze[x][y]);
         dbg!('&');
         x += 1;
-        viable = recurse(maze, steps, x, y);
+        viable = recurse(maze, steps, x, y, distance + 1);
         if !viable {
             maze[x][y] = 'n';
         }
@@ -32,7 +33,7 @@ fn recurse(
         dbg!("recurse", maze[x][y]);
         dbg!('&');
         x -= 1;
-        viable = recurse(maze, steps, x, y);
+        viable = recurse(maze, steps, x, y, distance + 1);
         if !viable {
             maze[x][y] = 'n';
         }
@@ -43,7 +44,7 @@ fn recurse(
         dbg!("recurse", maze[x][y]);
         dbg!('&');
         y += 1;
-        viable = recurse(maze, steps, x, y);
+        viable = recurse(maze, steps, x, y, distance + 1);
         if !viable {
             maze[x][y] = 'n';
         }
@@ -54,7 +55,7 @@ fn recurse(
         dbg!("recurse", maze[x][y]);
         dbg!('&');
         y -= 1;
-        viable = recurse(maze, steps, x, y);
+        viable = recurse(maze, steps, x, y, distance + 1);
         if !viable {
             maze[x][y] = 'n';
         }
@@ -74,7 +75,7 @@ fn recurse(
 }
 
 fn main() {
-    let input = include_str!("../../resources/small_input.txt");
+    let input = include_str!("../../resources/input.txt");
     let mut maze: Vec<Vec<char>> =
         input.lines().map(|x| Vec::from_iter(x.chars())).collect();
 
@@ -85,9 +86,14 @@ fn main() {
     let mut steps: Vec<(usize, usize)> = Vec::new();
 
     dbg!(init_pos, x, y);
-    recurse(&mut maze, &mut steps, x, y);
+    recurse(&mut maze, &mut steps, x, y, 0);
     dbg!(steps.len());
     dbg!(steps.len() / 2);
     // dbg!(steps);
     // dbg!(maze);
+    dbg!(maze
+        .to_owned()
+        .iter()
+        .map(|x| x.to_owned().iter().collect::<String>())
+        .collect::<Vec<String>>());
 }
